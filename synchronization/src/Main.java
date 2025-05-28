@@ -8,12 +8,16 @@ public class Main {
     static int maxValueNew = 0;
 
     public static void main(String[] args) throws InterruptedException {
-        Thread thread1 = new Thread();
-        Thread thread3 = new Thread();
+        Thread thread1;
+        Thread thread3;
 
 
-        Thread finalThread = thread3;
         thread1 = new Thread(() -> {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
             for (int i = 0; i < COUNT; i++) {
                 synchronized (sizeToFreq) {
                     int tempCount = countSymbolString(generateRoute("RLRFR", 100));
@@ -22,20 +26,26 @@ public class Main {
                     sizeToFreq.notifyAll();
                 }
             }
-            finalThread.interrupt();
 
         });
 
         thread3 = new Thread(() -> {
             synchronized (sizeToFreq) {
+
                 while (!Thread.interrupted()) {
                     try {
                         sizeToFreq.wait();
                     } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
+                        break;
                     }
+                    if (Thread.interrupted()) {
+                        break;
+                    }
+
+
                     for (int i : sizeToFreq.keySet()) {
                         if (sizeToFreq.get(i) > maxValueNew) {
+
                             maxValueNew = sizeToFreq.get(i);
                             System.out.println("У нас новый лидер: " + maxValueNew);
                         }
@@ -45,50 +55,12 @@ public class Main {
             }
         });
 
-        thread1.setPriority(Thread.MAX_PRIORITY);
-        thread3.setPriority(Thread.MIN_PRIORITY);
 
         thread1.start();
         thread3.start();
-        try {
-            thread1.join(); // Ожидаем завершения thread1
-            thread3.join(); // Ожидаем завершения thread2
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        thread1.join();
         thread3.interrupt();
 
-
-//        new Thread(() -> {
-//            synchronized (sizeToFreq) {
-//
-//                while (processedCount < COUNT) {
-//                    try {
-//                        sizeToFreq.wait();
-//                    } catch (InterruptedException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                }
-//
-//                int maxKey = 0;
-//                int maxValue = 0;
-//
-//                for (int i : sizeToFreq.keySet()) {
-//                    if (sizeToFreq.get(i) > maxValue) {
-//                        maxKey = i;
-//                        maxValue = sizeToFreq.get(i);
-//                    }
-//                }
-//                System.out.printf("Самое частое количество повторений %d (встретилось %d раз)\n", maxKey, maxValue);
-//                sizeToFreq.remove(maxKey);
-//                System.out.println("Другие размеры:");
-//                for (int keys : sizeToFreq.keySet()) {
-//                    System.out.printf("- %d (%d раз) \n", keys, sizeToFreq.get(keys));
-//                }
-//
-//            }
-//        }).start();
-//
 
     }
 
