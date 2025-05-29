@@ -1,8 +1,6 @@
 import java.lang.invoke.MutableCallSite;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.*;
 
 public class Main {
 
@@ -13,9 +11,11 @@ public class Main {
         }
 
         long startTs = System.currentTimeMillis(); // start time Time:
-        Callable<String> tasks = null;
+        List<Future<String>> futures = new ArrayList<>();
+        ExecutorService threadPool = Executors.newFixedThreadPool(10);
+
         for (String text : texts) {
-            tasks = () -> {
+            Callable<String> task  = () -> {
                 int maxSize = 0;
                 for (int i = 0; i < text.length(); i++) {
                     for (int j = 0; j < text.length(); j++) {
@@ -36,15 +36,15 @@ public class Main {
                 }
                 return text.substring(0, 100) + " -> " + maxSize;
             };
+            futures.add(threadPool.submit(task));
         }
-        FutureTask<String> future = new FutureTask<>(tasks);
-        new Thread(future).start();
-        while(!future.isDone()) {
-            new Thread(future).start();
+
+        for (Future<String> future : futures) {
             System.out.println(future.get());
         }
+        threadPool.shutdown();
         long endTs = System.currentTimeMillis(); // end time
-        System.out.println("Time: " + (endTs - startTs) + "ms"); // До 26447ms ->  После Time: 1179ms
+        System.out.println("Time: " + (endTs - startTs) + "ms"); // До 26447ms ->  После Time:  3373ms(зависит ExecutorService threadPool = Executors.newFixedThreadPool(10); чем больше тем быстрее)
     }
 
     public static String generateText(String letters, int length) {
@@ -56,3 +56,4 @@ public class Main {
         return text.toString();
     }
 }
+
