@@ -7,10 +7,14 @@ public class ShoppingCart {
     private Shop shop;
     private List<Product> buyThisStuff;
 
-    public ShoppingCart(UUID buyerID, Shop shop, List<Product> buyThisStuff) {
-        this.buyerID = buyerID;
+    public ShoppingCart(Shop shop, List<Product> buyThisStuff) {
+        this.buyerID = UUID.randomUUID();
         this.shop = shop;
         this.buyThisStuff = buyThisStuff;
+    }
+
+    public ShoppingCart() {
+        this.buyerID = UUID.randomUUID();
     }
 
     public UUID getBuyerID() {

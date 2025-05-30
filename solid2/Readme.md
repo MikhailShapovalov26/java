@@ -89,3 +89,11 @@ public static List<Product> filterProductCost(Shop shop, Predicate<Product> filt
 3) Составление продуктовой корзины пользователя
 
 Bac
+
+В данном примере я не использовал ни какие числа, а использовал `shop.getProducts().size()`
+```java
+    for (int i = 0; i < shop.getProducts().size(); i++) {
+                System.out.print(i + 1 + ". - ");
+                System.out.println(shop.getProducts().get(i));
+            }
+```

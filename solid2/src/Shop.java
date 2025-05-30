@@ -55,4 +55,17 @@ public class Shop {
         products.forEach(p -> sb.append("   - ").append(p).append("\n"));
         return sb.toString();
     }
+
+    public void deleteProduct(Product product, double purchased) {
+        if (purchased > product.getCount()) {
+            System.out.println("Не достаточное кол-во товара в данном магазине");
+            return;
+        }
+        product.setCount(product.getCount() - purchased);
+    }
+
+    public void returnWarehouse(Product product, double purchased) {
+        product.setCount(product.getCount() + purchased);
+
+    }
 }

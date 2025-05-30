@@ -19,6 +19,7 @@ public class InterfaceWithBuyer {
 
         boolean isRunning = true;
         Shop resultShop = null;
+        ShoppingCart shoppingCart = new ShoppingCart();
         while (isRunning) {
             System.out.println("Выберите вариант:");
             for (String option : optionsStart) {
@@ -59,7 +60,15 @@ public class InterfaceWithBuyer {
 
                     }
                 case 4:
+                    shoppingCart=PurchaseService.acquisition(resultShop);
+                    break;
                 case 5:
+                    if (shoppingCart.getBuyThisStuff() !=null) {
+                        System.out.println(shoppingCart.getBuyThisStuff());
+                    }else {
+                        System.out.println("В данный момент в корзине пусто \n");
+                    }
+                    break;
                 case 6:
                 case 7:
                 case 8:
