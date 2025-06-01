@@ -1,3 +1,6 @@
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Scanner;
 
@@ -10,18 +13,17 @@ public class InterfaceWithBuyer {
                 "1. Выбрать магазин",
                 "2. Показать список товаров в данном магазине",
                 "3. Отфильтровать необходимый товар",
-                "4. Приобрести товар",
-                "5. Показать мою корзину",
-                "6. Удалить товар из корзины",
-                "7. Очистить всю корзину",
-                "8. Выход"
+                "4. Добавление(удаление) товара из корзины покупателя",
+                "5. Доставка товара покупателю",
+                "6. Выход"
         };
 
         boolean isRunning = true;
         Shop resultShop = null;
         ShoppingCart shoppingCart = new ShoppingCart();
+        ProductDelivery productDelivery = new ProductDelivery();
         while (isRunning) {
-            System.out.println("Выберите вариант:");
+            System.out.println("Выберите вариант: ");
             for (String option : optionsStart) {
                 System.out.println(option);
             }
@@ -46,33 +48,69 @@ public class InterfaceWithBuyer {
                     System.out.println("Чтоб отфильтровать весь товар в представленном магазине, выберите условия фильтрации");
                     System.out.println("1. По цене товара");
                     System.out.println("2. По названию товара");
-                    switch (Integer.parseInt(scanner.nextLine())){
+                    switch (Integer.parseInt(scanner.nextLine())) {
                         case 1:
                             System.out.println("Необходимо вести цену");
                             int cost = Integer.parseInt(scanner.nextLine());
-                            System.out.println(FilterProduct.filterProductCost (resultShop, product -> product.getPrice() > cost));
+                            System.out.println(FilterProduct.filterProductCost(resultShop, product -> product.getPrice() > cost));
                             break;
                         case 2:
                             System.out.println("Необходимо вести название");
-                            String name  = scanner.nextLine();
+                            String name = scanner.nextLine();
                             System.out.println(FilterProduct.filterProductName(resultShop, name));
                             break;
 
                     }
+                    break;
                 case 4:
-                    shoppingCart=PurchaseService.acquisition(resultShop);
+                    InputOutput io = new ConsoleIO();
+                    CartManager cartManager = new CartManager(resultShop, io);
+                    PurchaseService purchaseService = new PurchaseService(resultShop, io, cartManager);
+                    shoppingCart = purchaseService.acquisition();
+                    productDelivery.setShoppingCartBuyer(shoppingCart);
                     break;
                 case 5:
-                    if (shoppingCart.getBuyThisStuff() !=null) {
-                        System.out.println(shoppingCart.getBuyThisStuff());
-                    }else {
-                        System.out.println("В данный момент в корзине пусто \n");
+                    productDelivery.setShoppingCartBuyer(shoppingCart);
+                    System.out.println("Для успешной доставки требуется указать Адрес и время");
+                    System.out.println("Укажите страну");
+                    String countryDelivery = scanner.nextLine();
+                    if (!GenerateData.listCountry.contains(countryDelivery)) {
+                        System.out.println("Такой страны нет в списке для доставки");
+                        System.out.println(GenerateData.listCountry.toString());
+                        break;
                     }
-                    break;
+                    System.out.println("Укажите индекс");
+                    String indexDelivery = scanner.nextLine();
+                    if (!GenerateData.listIndexes.contains(indexDelivery)) {
+                        System.out.println("Такой страны нет в списке для доставки");
+                        System.out.println(GenerateData.listIndexes.toString());
+                        break;
+                    }
+                    System.out.println("Укажите город");
+                    String cityDelivery = scanner.nextLine();
+                    if (!GenerateData.listCites.contains(cityDelivery)) {
+                        System.out.println("Такой страны нет в списке для доставки");
+                        System.out.println(GenerateData.listCites.toString());
+                        break;
+                    }
+                    System.out.println("Укажите улицу");
+                    String streetDelivery = scanner.nextLine();
+                    Address addressDeliver = new Address(countryDelivery,
+                            indexDelivery,
+                            cityDelivery,
+                            streetDelivery);
+                    productDelivery.setAddressDelivery(addressDeliver);
+                    System.out.println("Необходимо указать время для доставки в формате 'dd/MM/yyyy'");
+                    DateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
+                    productDelivery.setTimestamp(new Timestamp(formatter.parse(scanner.nextLine()).getTime()));
+
+                    System.out.println();
+                    System.out.println(productDelivery.toString());
                 case 6:
-                case 7:
-                case 8:
+                    isRunning = false;
+                    break;
                 default:
+                    System.out.println("Не допустимое значение");
             }
         }
 

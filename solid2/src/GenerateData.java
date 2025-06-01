@@ -5,7 +5,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class GenerateData {
 
-
+    public static List<String> listCountry = new ArrayList<>(); // сделал так, так как нужна база данных, чтоб проверять страну
+    public static List<String> listCites= new ArrayList<>();
+    public static List<String> listIndexes = new ArrayList<>();
 
     public static List<Product> generateDataProduct(){
 
@@ -29,6 +31,7 @@ public class GenerateData {
                     Math.round(ThreadLocalRandom.current().nextDouble(min, max)),
                     ThreadLocalRandom.current().nextInt((int) Math.round(min), (int) Math.round(max) + 1)
             ));
+
         });
 
         return resultProducts;
@@ -36,7 +39,6 @@ public class GenerateData {
 
     public static Address generateAddress(){
 
-        List<String> listCountry = new ArrayList<>();
         listCountry.add("RU");
         listCountry.add("USA");
         listCountry.add("China");
@@ -44,11 +46,11 @@ public class GenerateData {
         listCountry.add("Botch");
         listCountry.add("Poland");
 
-        List<String> listIndexes = new ArrayList<>();
+
         listIndexes.add("123455");
         listIndexes.add("123424455");
 
-        List<String> listCites= new ArrayList<>();
+
         listCites.add("Москва");
         listCites.add("Санкт-Петербург");
         listCites.add("Пекин");
