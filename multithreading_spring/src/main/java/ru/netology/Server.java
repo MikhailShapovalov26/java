@@ -1,5 +1,6 @@
 package ru.netology;
 
+import javax.servlet.ServletException;
 import java.io.*;
 import java.net.Socket;
 import java.util.List;
@@ -83,6 +84,8 @@ public class Server implements Runnable {
                     ex.printStackTrace();
                 }
             }
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
         }
 
 

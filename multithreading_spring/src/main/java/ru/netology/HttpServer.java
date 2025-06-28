@@ -1,7 +1,9 @@
 package ru.netology;
 
 
+import java.io.BufferedOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashMap;
@@ -53,7 +55,29 @@ public class HttpServer {
                 response.addBody(html);
             }
         });
-//        server.addHandler("GET", "/*", (Handler) new FileHandler());
+        server.addHandler("POST", "/messages", new Handler() {
+            @Override
+            public void handle(Request request, Response response) throws IOException {
+                StringBuffer buffer = new StringBuffer();
+                InputStream in = request.getBody();
+                int c;
+                while ((c = in.read())!=-1){
+                    buffer.append((char) c);
+                }
+                String[] componetns = buffer.toString().split("&");
+                Map<String, String> urlParameters = new HashMap<>();
+                for( String component : componetns){
+                    String[] pieces = component.split("=");
+                    urlParameters.put(pieces[0], pieces[1]);
+                }
+                String html = "<body>Welcome, " + urlParameters.get("username") + "</body>";
+
+                response.setResponseCode(200, "ОК");
+                response.addHeader("Content-Type", "text/html");
+                response.addBody(html);
+
+            }
+        });
         server.start();
 
 
