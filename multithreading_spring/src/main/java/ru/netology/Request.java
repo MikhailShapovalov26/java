@@ -126,7 +126,6 @@ public class Request {
     }
 
     private void pareMultipartData(int contentLength, String boundary) throws IOException {
-
         StringBuilder body = new StringBuilder();
         char[] buffer = new char[contentLength];
         in.read(buffer, 0, contentLength);
